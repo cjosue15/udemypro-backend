@@ -3,7 +3,7 @@ const bcryptjs = require('bcryptjs');
 
 const getUsuarios = async (req, res) => {
     try {
-        const usuarios = await Usuario.find({}, '-password');
+        const usuarios = await Usuario.find({}, ['-password', '-__v']);
         res.status(200).json({ succes: true, data: usuarios });
     } catch (error) {
         res.status(500).json({ succes: false, error });
@@ -57,7 +57,26 @@ const createUser = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const usuario = await Usuario.findById(id, ['-password', '-__v']);
+
+        if (!usuario) {
+            return res.status(404).json({ succes: false, error: `El usuario con id: ${id} no existe` });
+        }
+
+        console.log(usuario);
+
+        res.status(200).json({ usuario });
+    } catch (error) {
+        res.status(500).json({ succes: false, error });
+    }
+};
+
 module.exports = {
     getUsuarios,
     createUser,
+    updateUser,
 };
