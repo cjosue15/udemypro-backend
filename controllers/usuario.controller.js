@@ -10,6 +10,22 @@ const getUsuarios = async (req, res) => {
     }
 };
 
+const getOneUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const usuario = await Usuario.findById(id, ['-password', '-__v']);
+
+        if (!usuario) {
+            return res.status(404).json({ succes: false, error: `El usuario con id: ${id} no existe` });
+        }
+
+        res.status(200).json({ succes: true, data: usuario });
+    } catch (error) {
+        res.status(400).json({ succes: false, error });
+    }
+};
+
 const createUser = async (req, res) => {
     try {
         // "nombres": "Miguel Angel",
@@ -61,15 +77,40 @@ const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const usuario = await Usuario.findById(id, ['-password', '-__v']);
+        const { nombres, apellidos, email, img, role } = req.body;
+
+        let usuario = await Usuario.findById(id, ['-password', '-__v']);
 
         if (!usuario) {
             return res.status(404).json({ succes: false, error: `El usuario con id: ${id} no existe` });
         }
 
-        console.log(usuario);
+        usuario.nombres = nombres;
+        usuario.apellidos = apellidos;
+        usuario.email = email;
+        usuario.role = role;
 
-        res.status(200).json({ usuario });
+        await usuario.save();
+
+        res.status(200).json({ succes: true, message: 'Usuario actualizado' });
+    } catch (error) {
+        res.status(500).json({ succes: false, error });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // let usuario = await Usuario.findById(id);
+
+        const usuario = await Usuario.findByIdAndRemove(id);
+
+        if (!usuario) {
+            return res.status(404).json({ succes: false, error: `El usuario con id: ${id} no existe` });
+        }
+
+        res.status(200).json({ succes: true, message: 'Usuario eliminado' });
     } catch (error) {
         res.status(500).json({ succes: false, error });
     }
@@ -79,4 +120,6 @@ module.exports = {
     getUsuarios,
     createUser,
     updateUser,
+    getOneUsuario,
+    deleteUser,
 };
