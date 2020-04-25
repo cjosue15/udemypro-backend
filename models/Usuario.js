@@ -18,6 +18,13 @@ const usuarioSchema = new Schema({
     role: { type: String, required: true, default: 'USER_ROLE', enum: roles },
 });
 
+usuarioSchema.methods.toJSON = function () {
+    const user = this;
+    const userObj = user.toObject();
+    delete userObj.password;
+    return userObj;
+};
+
 usuarioSchema.plugin(mongoose_validators, { message: '{PATH} debe ser único' });
 // usuarioSchema.plugin(mongoose_validators, { message: 'El correo debe ser único' });
 

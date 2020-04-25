@@ -1,9 +1,12 @@
 const expres = require('express');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 const app = expres();
 
 const PORT = process.env.PORT || 3000;
+
+dotenv.config();
 
 // midelwares
 app.use(expres.json());
@@ -14,7 +17,7 @@ app.use(require('./routes/index.routes'));
 
 // mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true})
 mongoose.connection
-    .openUri('mongodb://localhost:27017/hospitalDB', {
+    .openUri(process.env.MONGO, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
